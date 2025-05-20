@@ -75,7 +75,7 @@ Please introduce yourself briefly, we don't have a lot of time for this part. Ma
 
 - The name you prefer to be called in class if different from the one listed on the class list
 - Your current job responsibilities if you think it is relevant to the class.
-- Your experience with UML_RT, other versions of the tool or similar tools and cC++ development.
+- Your experience with UML_RT, other versions of the tool or similar tools and C++ development.
 - Any specific objectives for the class or specific items you want to learn.
 - And to humanize things a little: one non-technical thing about you like a hobby or interest you enjoy.
 
