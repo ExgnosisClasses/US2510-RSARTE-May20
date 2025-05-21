@@ -30,6 +30,8 @@ RSARTE models are stored in Eclipse projects, which map to directories in the Cl
 
 #### Project Structure
 A common structure includes:
+
+```text
 /myvob/SensorControlModel/
 ├── .project                      # Eclipse project descriptor
 ├── .settings/                   # Eclipse-specific settings
@@ -45,7 +47,7 @@ A common structure includes:
 │   └── build.tc                 # Transform Configuration script
 └── README.md
 
-
+```
 <img src="images/clearcase.png" width="600" alt="">
 
 ## Strategies for Versioning: Full Model vs Fragments
