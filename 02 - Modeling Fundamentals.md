@@ -13,7 +13,7 @@ UML-RT is a constrained subset of UML 2 tailored for modeling real-time, embedde
 This specification is also included in the same folder as `2.UML Specification SDL-RT.pdf`
 
 
-### Key Differences:
+### Key Differences: 
 
 <img src="images/uml2-tr-differences.png" width="800" alt="">
 
@@ -331,7 +331,7 @@ Thread-Safe Concurrency
 - Prevents common real-time system bugs (e.g., race conditions, deadlocks).
 
 Flexible Architectures
-- Using non-wired ports, capsules can be dynamicalaaly connected via service names.
+- Using non-wired ports, capsules can be dynamically connected via service names.
 - Enables plug-and-play architectures, load balancing, service discovery.
 
 Clear Interface Contracts
@@ -374,66 +374,86 @@ C.A.R. Hoare’s design promotes strict encapsulation and interaction through we
 - UML-RT extends CSP's ideas for practical software engineering with state machines and asynchronous runtime behavior, while preserving compositional concurrency principles.
 
 ### Ports Summary
-What is a Port?
 
-    A port is a special kind of attribute on a capsule.
+- A port is a special kind of attribute on a capsule.
+- Represents a communication endpoint for sending and receiving messages.
+- Typed by a protocol, which defines the valid in-events and out-events that can flow through it.
 
-    Represents a communication endpoint for sending and receiving messages.
+Port Lifecycle
+- Ports are owned by capsule instances.
+- They are automatically created when the capsule instance is created      destroyed with it.
 
-    Typed by a protocol, which defines the valid in-events and out-events that can flow through it.
+How Message Routing Works         
 
-🔹 Port Lifecycle
+- Messages sent from a capsule’s behavior port are:
+  - Routed through connectors (wired or dynamic).
+  - May pass through relay ports before reaching the receiver. 
+  - Delivered to a behavior port on the destination capsule and handled by its state machine.
+  - Relay ports pass messages through without consuming them.
+  - If the connection is broken or a port is unconnected, messages may be lost, and an error message is shown at runtime.
 
-    Ports are owned by capsule instances.
+Replicated Ports
+- A port can have multiplicity > 1, allowing multiple connections (e.g., a server with multiple clients).
+- Shown in diagrams as a stack of ports.
+- You can use sendAt(index, priority) to target a specific port instance.
 
-    They are automatically created when the capsule instance is created and destroyed with it.
+Runtime Resize of Multiplicity
+- The replication factor (number of port instances) can be changed at runtime using resize().
+- This can free or limit the number of allowed dynamic connections.
 
-🔹 Port Properties (Configurable Attributes)
-Property	Description
-Service	Marks the port as part of the capsule’s external interface. Default: true
-Behavior	Routes messages to/from the state machine. Default: false
-Conjugated	Swaps in-events and out-events of the protocol. Notation: ~portName
-Wired	Requires a static connector to communicate. Default: true
-Publish	Relevant for non-wired ports in client/server designs (see SAP/SPP)
-Notification	Enables automatic messages rtBound/rtUnbound when the port is (un)connected. Default: true
-🔹 How Message Routing Works
+“Find Connected Ports” context menu helps trace connections through relay ports or directly.
 
-    Messages sent from a capsule’s behavior port are:
+Design Tips
+- Use service ports for public interfaces and behavior ports for internal handling.
+- Use relay ports to cleanly delegate between nested capsule structures.
+- Carefully configure conjugation and wiring to ensure messages are routed as expected.
 
-        Routed through connectors (wired or dynamic).
+---
 
-        May pass through relay ports before reaching the receiver.
+## Connectors
 
-        Delivered to a behavior port on the destination capsule and handled by its state machine.
+Connectors are structural relationships that route messages between ports of capsule instances in a composite structure. 
+- They are fundamental to the communication model in UML-RT and define how messages travel across capsules.
 
-    Relay ports pass messages through without consuming them.
+### Types of Connectors
 
-    If the connection is broken or a port is unconnected, messages may be lost, and an error message is shown at runtime.
+There are two main types of connectors in RSARTE:
 
-🔹 Replicated Ports
+Delegation Connectors
+- Purpose: Delegate responsibility from a service port on a capsule to a port on one of its capsule parts.
+- Routing: Messages arriving at the capsule’s external interface (service port) are routed inward, or vice versa.
+- Use Case: Used to delegate part of a capsule's interface to a subcomponent.
+- Diagram Location: Connects the capsule’s frame to a port on a capsule part.
 
-    A port can have multiplicity > 1, allowing multiple connections (e.g., a server with multiple clients).
+Assembly Connectors
+- Purpose: Connect two ports that directly communicate with each other—typically between capsule parts or from the capsule to a capsule part.
+- Use Case: To assemble complex capsules by linking internal components.
+- Diagram Location: Between ports of capsule parts or between a capsule and one of its parts.
 
-    Shown in diagrams as a stack of ports.
+### How Connectors Are Defined
 
-    You can use sendAt(index, priority) to target a specific port instance.
+Connectors are defined graphically in a composite structure diagram.
+- Each connector connects two ports that must be compatible—typed by the same protocol, one possibly being conjugated.
+- When you draw a connector between two ports:
+  - The tool checks protocol compatibility.
+  - The ports must belong to capsules or capsule parts within the composite structure.
 
-🔹 Runtime Resize of Multiplicity
+### USage
 
-    The replication factor (number of port instances) can be changed at runtime using resize().
+When a capsule sends a message, it is sent via a behavior port.
+- That message is routed through:
+  - Assembly connectors → directly to another capsule or port.
+  - Delegation connectors → passed up or down the structural hierarchy.
+- Messages can also pass through relay ports if the communication path is layered.
+  - If any part of the path is missing (i.e., a connector is absent), the message is dropped, and a runtime error is reported.
 
-    This can free or limit the number of allowed dynamic connections.
+### Key Points
 
-🔹 Modeling Tools
+- Connectors enforce decoupling and modularity in the model.
+- They promote encapsulation by routing communication through well-defined ports and protocols.
+- Connectors support both static connections (for wired ports) and dynamic connections (for non-wired ports).
+- Multiplicity of ports affects how many connections can be made (e.g., one-to-many via replicated ports).
 
-    “Find Connected Ports” context menu helps trace connections through relay ports or directly.
+--- 
 
-🧠 Design Tips
-
-    Use service ports for public interfaces and behavior ports for internal handling.
-
-    Use relay ports to cleanly delegate between nested capsule structures.
-
-    Carefully configure conjugation and wiring to ensure messages are routed as expected.
-
-#### 
+## 
