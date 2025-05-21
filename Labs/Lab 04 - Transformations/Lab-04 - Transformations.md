@@ -49,7 +49,7 @@ Note the id of the element, in this case it is '_Y4mPcDUKEfCDQrzJ8etuGQ'
 
 Now we can add the line (make sure you substitute your ID)
 
-``text
+```text
 tc.topCapsule = 'platform:/resource/Lab3/HelloWorld.emx#_Y4mPcDUKEfCDQrzJ8etuGQ';
 ```
 
